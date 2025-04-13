@@ -1,0 +1,10 @@
+services:
+  mcp_server:
+    container_name: mcp_server
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "5555:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
