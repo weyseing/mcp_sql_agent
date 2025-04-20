@@ -3,6 +3,7 @@ import logging
 import sqlite3
 from loguru import logger
 from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.prompts import base
 
 # logging
 logging.basicConfig(
@@ -46,8 +47,8 @@ def query_data(sql: str) -> str:
         conn.close()
 
 @mcp.prompt()
-def example_prompt(code: str) -> str:
-    return f"Please review this code:\n\n{code}"
+def prompt_sql_agent() -> str:
+    return [base.AssistantMessage("You are a master SQLite assistant. Your job is to use the tools at your dispoal to execute SQL queries and provide the results to the user.")]
 
 if __name__ == "__main__":
     print("Starting server...")

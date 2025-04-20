@@ -35,8 +35,6 @@ server_params = StdioServerParameters(
 class Chat:
     # message & system msg
     messages: list[MessageParam] = field(default_factory=list)
-    system_prompt: str = """You are a master SQLite assistant. 
-    Your job is to use the tools at your dispoal to execute SQL queries and provide the results to the user."""
 
     async def process_query(self, session: ClientSession, query: str) -> None:\
         # get MCP tools
@@ -54,11 +52,18 @@ class Chat:
         # get MCP prompts
         response = await session.list_prompts()
         logging.info(f"Available MCP prompts: {str(response)}")
+        prompt_res = await session.get_prompt("prompt_sql_agent", arguments={})
+        logging.info(f"Prompt msg: {str(prompt_res)}")
+        system_prompt = next(
+            (m.content.text for m in prompt_res.messages if m.role == "assistant"),
+            None
+        )
+        logging.info(f"System prompts: {str(system_prompt)}")
 
         # call LLM
         res = await anthropic_client.messages.create(
             model="claude-3-5-sonnet-latest",
-            system=self.system_prompt,
+            system=system_prompt,
             max_tokens=8000,
             messages=self.messages,
             tools=available_tools,
