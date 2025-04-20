@@ -6,5 +6,5 @@ services:
       - .:/app
     ports:
       - "5555:8000"
-    environment:
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
