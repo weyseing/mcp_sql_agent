@@ -1,20 +1,16 @@
-import os
 import asyncio
-import anthropic
-from openai import OpenAI
-from typing import Union, cast
-from dotenv import load_dotenv
 from dataclasses import dataclass, field
-from mcp.client.stdio import stdio_client
-from mcp import ClientSession, StdioServerParameters
+from typing import Union, cast
+
+import anthropic
 from anthropic.types import MessageParam, TextBlock, ToolUnionParam, ToolUseBlock
+from dotenv import load_dotenv
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
-# env
 load_dotenv()
+anthropic_client = anthropic.AsyncAnthropic()
 
-# OAI
-openai_key = os.environ["OPENAI_API_KEY"]
-oai_client = OpenAI(api_key=openai_key)
 
 # Create server parameters for stdio connection
 server_params = StdioServerParameters(
@@ -22,6 +18,7 @@ server_params = StdioServerParameters(
     args=["./mcp_server.py"],  # Optional command line arguments
     env=None,  # Optional environment variables
 )
+
 
 @dataclass
 class Chat:
@@ -42,7 +39,7 @@ class Chat:
         ]
 
         # Initial Claude API call
-        res = await oai_client.messages.create(
+        res = await anthropic_client.messages.create(
             model="claude-3-5-sonnet-latest",
             system=self.system_prompt,
             max_tokens=8000,
